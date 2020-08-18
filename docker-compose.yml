@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  db:
+    container_name: libredte_postgres
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432/tcp
+    environment:
+      - POSTGRES_USER=libredte
+      - POSTGRES_PASSWORD=libredte
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+  # Pgadmin4 
+  pgadmin:
+    container_name: libredte_pgadmin4
+    image: dpage/pgadmin4:latest
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - 8888:80/tcp
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=libredte
+      - PGADMIN_DEFAULT_PASSWORD=libredte
+      - PGADMIN_LISTEN_PORT=80
+  # LibreDTE Server
+  web:
+    container_name: libredte_web
+    image: izotecarlitos/libredte:latest
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    volumes:
+      - ./logos:/var/www/html/libredte/website/data/logos
+      - ./firma_electronica:/var/www/html/libredte/website/data/firma_electronica
+      - ./Config:/var/www/html/libredte/website/Config
+volumes:
+  db-data:
+    driver: local
+  pgadmin-data:
+    driver: local
